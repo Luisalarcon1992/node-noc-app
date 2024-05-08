@@ -15,19 +15,18 @@ export class Server {
     public static start() {
         
         
-        
-        CronService.createJob('*/5 * * * * *', () => {
 
+        CronService.createJob('*/5 * * * * *', () => {
+            
             const url = 'https://google.com';
 
             new CheckService(
                 () => console.log( `${ url } is ok` ),
                 ( error ) => console.log( error ),
                 fileSystemLogRepository,
-            ).execute( url );
-            // new CheckService().execute( 'http://localhost:3000' );            
-          
+            ).execute( url );   
         });
+
 
     };
 }
