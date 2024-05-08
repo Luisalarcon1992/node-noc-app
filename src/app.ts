@@ -4,7 +4,9 @@ import { Server } from "./presentation/server";
 ( async () => {
 
     try {
-        await main();
+        
+        main();
+        
     } catch (error) {
         console.error('Error starting server:', error)
     };
@@ -12,5 +14,7 @@ import { Server } from "./presentation/server";
 
 
 function main() {
+    
     Server.start();
+    // console.log('main2')
 }

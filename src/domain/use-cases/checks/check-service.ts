@@ -22,18 +22,24 @@ export class CheckService implements CheckServiceUseCase{
 
     async execute( url: string ): Promise<boolean> {
         
+        
         try {
+
+            console.log( 'Checking url:', url)
 
             const req = await fetch( url );
             if ( !req.ok ) throw new Error(`Request failed to ${url}`);
 
             const log = new LogEntity( LogLevel.low, `Request to ${url} was successful` ) ;
+
+            console.log({ log })
             this.logRepository.saveLog( log );
 
             this.successCallback();
 
             return true;
 
+            
         } catch (error) {
 
             const errorMessage = `Request to ${url} failed`;
@@ -43,6 +49,8 @@ export class CheckService implements CheckServiceUseCase{
             this.logRepository.saveLog( log );
 
             this.errorCallback( errorMessage );
+
+            console.log(error)
 
             return false;
         }
