@@ -1,12 +1,12 @@
-import { LogEntity, LogLevel } from '../../entities/log.entity';
+import { LogEntity, LogEntityOptions, LogLevel } from '../../entities/log.entity';
 import { LogRepository } from '../../repository/log.repository';
 interface CheckServiceUseCase {
 
     execute( url: string ): Promise<boolean>;
 }
 
-type SuccessCallback = () => void;
-type ErrorCallback = ( error: string ) => void;
+type SuccessCallback = (() => void ) | undefined;
+type ErrorCallback = (( error: string ) => void) | undefined;
 
 
 export class CheckService implements CheckServiceUseCase{
@@ -30,12 +30,17 @@ export class CheckService implements CheckServiceUseCase{
             const req = await fetch( url );
             if ( !req.ok ) throw new Error(`Request failed to ${url}`);
 
-            const log = new LogEntity( LogLevel.low, `Request to ${url} was successful` ) ;
+            const options: LogEntityOptions = {
+                level: LogLevel.low,
+                message: `Request to ${url} was successful`,
+                origin: 'Check-Service.ts',
+            }
 
-            console.log({ log })
+            const log = new LogEntity( options ) ;
+
             this.logRepository.saveLog( log );
 
-            this.successCallback();
+            this.successCallback && this.successCallback();
 
             return true;
 
@@ -44,13 +49,19 @@ export class CheckService implements CheckServiceUseCase{
 
             const errorMessage = `Request to ${url} failed`;
 
-            const log = new LogEntity( LogLevel.high, errorMessage );
+            const options: LogEntityOptions = {
+                level: LogLevel.high,
+                message: errorMessage,
+                origin: 'Check-Service.ts',
+            
+            }
+
+            const log = new LogEntity( options );
             
             this.logRepository.saveLog( log );
 
-            this.errorCallback( errorMessage );
+            this.errorCallback && this.errorCallback( errorMessage );
 
-            console.log(error)
 
             return false;
         }
